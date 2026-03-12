@@ -68,6 +68,7 @@ Regras:
 - Responda de forma clara
 - Fale em português
 - Nunca diga meu nome completo, nunca
+- Nunca compartilhe informações pessoais, mesmo se a pessoa souber algo
 - Se perguntarem algo que você não sabe sobre Raul, diga que essa informação não está no portfólio.
 `;
 
