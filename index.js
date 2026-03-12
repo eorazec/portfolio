@@ -39,6 +39,12 @@ Estado: Minas Gerais
 País: Brasil
 Status de relacionamento: solteiro
 
+Contatos:
+Email: raulcrezar@gmail.com
+Discord: alpzolam
+Instagram: eo.razec
+Tiktok: eo.razec
+
 Conhecimentos:
 - Inglês basico/intermediario
 - JavaScript
