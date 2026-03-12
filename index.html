@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RZC // ARCHIVE_01</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@700&family=Space+Grotesk:wght@400;700&family=JetBrains+Mono:wght@500;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%23050505'/><rect x='20' y='20' width='60' height='60' stroke='%237000FF' stroke-width='10' fill='none'/><rect x='40' y='40' width='20' height='20' fill='%237000FF'/></svg>">
+    <style>
+        :root {
+            --neon: #7000FF;
+            --bg: #050505;
+            --surface: #0A0A0A;
+            --text: #FFFFFF;
+            --border: #1A1A1A;
+            --gray: #9ca3af;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Space Grotesk', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            overflow-x: hidden;
+        }
+
+        body::after {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), 
+                        linear-gradient(90deg, rgba(255, 0, 0, 0.02), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.02));
+            background-size: 100% 4px, 3px 100%;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        .sidebar {
+            width: 80px;
+            height: 100vh;
+            position: sticky;
+            top: 0;
+            border-right: 2px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 30px;
+            gap: 20px;
+            background: var(--surface);
+            z-index: 100;
+        }
+
+        .nav-btn {
+            width: 50px;
+            height: 50px;
+            border: 2px solid var(--border);
+            background: transparent;
+            color: var(--gray);
+            font-size: 18px;
+            cursor: pointer;
+            transition: 0.1s steps(4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .nav-btn:hover, .nav-btn.active {
+            background: var(--text);
+            color: var(--bg);
+            border-color: var(--text);
+            box-shadow: 4px 4px 0 var(--neon);
+        }
+
+        .container {
+            flex: 1;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            /* ALINHAMENTO VERTICAL NO PC */
+            justify-content: center; 
+            min-height: 100vh;
+            width: 100%;
+        }
+
+        .top-bar {
+            width: 100%;
+            max-width: 900px;
+            display: flex;
+            justify-content: space-between;
+            font-family: 'JetBrains Mono';
+            font-size: 10px;
+            color: var(--gray);
+            margin-bottom: 20px;
+        }
+
+        .status-dot { width: 8px; height: 8px; background: #00ff00; display: inline-block; margin-right: 5px; box-shadow: 0 0 5px #00ff00; }
+
+        .page { display: none; width: 100%; max-width: 900px; }
+        .page.active { display: block; animation: blink 0.1s steps(2); }
+        @keyframes blink { from { opacity: 0; } to { opacity: 1; } }
+
+        .profile { background: var(--surface); border: 3px solid var(--text); position: relative; width: 100%; }
+        .banner { height: 180px; background-size: cover; background-position: center; border-bottom: 3px solid var(--text); position: relative; }
+        .avatar { width: 110px; height: 110px; border: 3px solid var(--text); position: absolute; left: 30px; bottom: -55px; background-size: cover; z-index: 2; }
+        .thinking-container { position: absolute; left: 155px; bottom: 15px; }
+        .thinking-bubble { background: var(--text); color: var(--bg); padding: 5px 12px; font-family: 'JetBrains Mono', monospace; font-weight: 800; font-size: 10px; box-shadow: 4px 4px 0 var(--neon); animation: float 3s ease-in-out infinite; }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+
+        .content { padding: 75px 30px 30px; }
+        .displayname { font-family: 'Syncopate'; font-size: clamp(1.5rem, 5vw, 2.2rem); letter-spacing: -2px; }
+        .username { font-family: 'JetBrains Mono'; color: var(--neon); margin-bottom: 15px; font-weight: 800; font-size: 14px; }
+        .bio { white-space: pre-line; border-left: 3px solid var(--neon); padding-left: 15px; margin-bottom: 25px; color: var(--gray); font-size: 14px; }
+
+        .personal-data { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); 
+            gap: 15px; padding: 20px 0; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); 
+        }
+        .data-item { display: flex; flex-direction: column; font-family: 'JetBrains Mono'; }
+        .data-label { color: var(--gray); font-size: 10px; text-transform: uppercase; }
+        .data-value { font-size: 11px; font-weight: 700; }
+
+        .section-title { font-family: 'Syncopate'; font-size: 10px; color: var(--neon); margin: 30px 0 15px; display: flex; align-items: center; gap: 10px; }
+        .section-title::after { content: ""; flex: 1; height: 1px; background: var(--border); }
+
+        .skills-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; }
+        .skill-bar { background: #111; border: 1px solid var(--border); padding: 12px; }
+        .skill-info { display: flex; justify-content: space-between; font-family: 'JetBrains Mono'; font-size: 11px; margin-bottom: 8px; }
+        .progress-track { height: 4px; background: #222; }
+        .progress-fill { height: 100%; background: var(--text); box-shadow: 0 0 10px var(--neon); }
+
+        .chat-container { background: var(--surface); border: 3px solid var(--text); height: 500px; display: flex; flex-direction: column; width: 100%; }
+        .chat-header { padding: 15px; border-bottom: 3px solid var(--text); font-family: 'Syncopate'; font-size: 10px; background: var(--text); color: var(--bg); }
+        .chat-messages { flex: 1; padding: 20px; overflow-y: auto; font-family: 'JetBrains Mono'; font-size: 13px; display: flex; flex-direction: column; gap: 15px; }
+        .chat-input-area { padding: 15px; border-top: 3px solid var(--text); display: flex; gap: 10px; }
+        .chat-input { flex: 1; background: transparent; border: 2px solid var(--border); color: var(--text); padding: 10px; font-family: 'JetBrains Mono'; outline: none; }
+        
+        .sendbtn { 
+            background: transparent; 
+            border: 2px solid var(--text); 
+            color: var(--text); 
+            font-family: 'JetBrains Mono'; 
+            font-weight: 800; 
+            padding: 0 20px; 
+            cursor: pointer; 
+        }
+        .sendbtn:hover { background: var(--text); color: var(--bg); box-shadow: 4px 4px 0 var(--neon); }
+
+        .project-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; width: 100%; }
+        .project-card { background: var(--surface); border: 2px solid var(--border); transition: 0.2s; }
+        .project-img { height: 160px; background-size: cover; background-position: center; border-bottom: 2px solid var(--border); }
+        .project-info { padding: 20px; }
+        .tag { font-family: 'JetBrains Mono'; font-size: 9px; padding: 3px 6px; background: var(--border); margin-right: 5px; display: inline-block; margin-bottom: 5px; }
+        .btn-row { display: flex; gap: 10px; margin-top: 15px; }
+        .btn { flex: 1; text-align: center; padding: 10px; border: 2px solid var(--text); color: var(--text); text-decoration: none; font-family: 'JetBrains Mono'; font-size: 11px; font-weight: 800; cursor: pointer; transition: 0.1s; }
+        .btn:hover { background: var(--text); color: var(--bg); box-shadow: 4px 4px 0 var(--neon); }
+        .btn.disabled { opacity: 0.2; pointer-events: none; }
+
+        @media (max-width: 768px) {
+            body { flex-direction: column; }
+            .sidebar {
+                width: 100%;
+                height: 60px;
+                flex-direction: row;
+                position: fixed;
+                bottom: 0;
+                top: auto;
+                padding-top: 0;
+                justify-content: center;
+                border-right: none;
+                border-top: 2px solid var(--border);
+            }
+            .container { 
+                padding: 20px 15px 80px;
+                justify-content: flex-start; /* No mobile, melhor começar do topo */
+                min-height: calc(100vh - 60px);
+            }
+            .avatar { left: 50%; transform: translateX(-50%); width: 90px; height: 90px; bottom: -45px; }
+            .thinking-container { left: 0; right: 0; top: 10px; bottom: auto; display: flex; justify-content: center; }
+            .content { padding: 60px 15px 30px; text-align: center; }
+            .bio { text-align: left; }
+            .chat-input-area { flex-direction: column; }
+            .sendbtn { padding: 12px; width: 100%; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="sidebar">
+        <button class="nav-btn active" onclick="showPage('home', this)"><i class="fa-solid fa-house"></i></button>
+        <button class="nav-btn" onclick="showPage('projects', this)"><i class="fa-solid fa-terminal"></i></button>
+        <button class="nav-btn" onclick="showPage('ai-chat', this)"><i class="fa-solid fa-robot"></i></button>
+        <button class="nav-btn" onclick="window.open('https://github.com/eorazec', '_blank')"><i class="fa-brands fa-github"></i></button>
+    </nav>
+
+    <div class="container">
+        <div class="top-bar">
+            <span><span class="status-dot"></span> SYSTEM_ACTIVE // PORT: 26886</span>
+            <span id="clock">00:00:00</span>
+        </div>
+
+        <div id="home" class="page active">
+            <div class="profile">
+                <div class="banner" id="banner">
+                    <div class="avatar" id="avatar"></div>
+                    <div class="thinking-container">
+                        <div class="thinking-bubble"><i class="fa-solid fa-code"></i> <span id="thinkingText"></span></div>
+                    </div>
+                </div>
+                <div class="content">
+                    <h1 class="displayname" id="displayName"></h1>
+                    <div class="username" id="username"></div>
+                    <p class="bio" id="bio"></p>
+                    <div class="personal-data">
+                        <div class="data-item"><span class="data-label">Status</span><span class="data-value" id="status"></span></div>
+                        <div class="data-item"><span class="data-label">Idade</span><span class="data-value" id="age"></span></div>
+                        <div class="data-item"><span class="data-label">Local</span><span class="data-value" id="location"></span></div>
+                        <div class="data-item"><span class="data-label">Contato</span><span class="data-value" id="email"></span></div>
+                    </div>
+                    <div class="section-title">SKILLS</div>
+                    <div class="skills-grid" id="skillsGrid"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="projects" class="page">
+            <div class="section-title">LOG_PROJECTS</div>
+            <div class="project-grid" id="projectGrid"></div>
+        </div>
+
+        <div id="ai-chat" class="page">
+            <div class="chat-container">
+                <div class="chat-header">PROTO_CHAT // IA INTERFACE</div>
+                <div class="chat-messages" id="chatLogs">
+                    <div class="response-box" style="background: #111; padding: 15px; border: 1px solid var(--neon); font-family:'JetBrains Mono'; font-size:12px;">Aguardando comando... Digite algo abaixo para iniciar a comunicação.</div>
+                </div>
+                <div id="typingIndicator" class="typing" style="padding: 10px; display: none; color: var(--neon); font-family:'JetBrains Mono'; font-size: 10px;">IA_THINKING...</div>
+                <div class="chat-input-area">
+                    <input id="msg" class="chat-input" placeholder="Digite sua mensagem...">
+                    <button class="sendbtn" onclick="send()">SEND</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<script>
+    const profile = {
+        displayName: "Razec",
+        username: "ID_PROTO://TOJI-FUSHIGURO",
+        bio: `EU NÃO SOU MAIS UM ZENIN,\nPEGUEI O SOBRENOME DA MINHA ESPOSA.\nAGORA SOU FUSHIGURO.`,
+        thinking: "analyzing_node_clusters...",
+        status: "Solteiro",
+        age: "16 Anos",
+        location: "Brasil, MG",
+        email: "+55 (37) 9 9988-2259",
+        avatar: "https://photo.hakari.fun/uploads/WEBSITE/3bb80d8e-d3ce9047-12032026-db0f8485f6583f396f51d5ec220117e8.webp",
+        banner: "https://camo.githubusercontent.com/77093fb938d6d767e4b9bcdf7935fbdcbb105651806d68206bb6f7054945c58e/68747470733a2f2f70686f746f2e68616b6172692e66756e2f75706c6f6164732f574542534954452f35333661316530392d35393439386430382d31383032323032362d66343365396362343337346632616566343330366635323630646536386230625f315f2e6a7067"
+    };
+
+    const skills = [
+        { name: "NODE.JS // D.JS", level: "95%" },
+        { name: "PYTHON // AUTOMATION", level: "80%" },
+        { name: "PHP // DEVELOPMENT", level: "50%" },
+        { name: "FRONTEND // BRUTALISM", level: "85%" }
+    ];
+
+    const projects = [
+        {
+            title: "RZCDOLL // CORE",
+            desc: "Sistema de gerenciamento de permissões e painel web automatizado.",
+            image: "https://photo.hakari.fun/uploads/WEBSITE/6cbb40e6-69e05b5e-12032026-image.png",
+            langs: ["Node.js", "JavaScript", "Brutal-CSS"],
+            visit: "https://rzcdoll.venixcloud.com/",
+            project: "https://github.com/eorazec/RzcDoll"
+        },
+        {
+            title: "HAKARI // TV",
+            desc: "Protocolo de streaming de alta fidelidade focado em animes.",
+            image: "https://photo.hakari.fun/uploads/WEBSITE/1c1b6a71-8097e726-12032026-image.png",
+            langs: ["Python", "JS", "HTML5"],
+            visit: "https://tv.hakari.fun",
+            project: null
+        }
+    ];
+
+    function updateClock() {
+        const now = new Date();
+        document.getElementById('clock').innerText = now.getHours().toString().padStart(2, '0') + ":" + now.getMinutes().toString().padStart(2, '0') + ":" + now.getSeconds().toString().padStart(2, '0');
+    }
+    setInterval(updateClock, 1000);
+
+    document.getElementById("displayName").innerText = profile.displayName;
+    document.getElementById("username").innerText = profile.username;
+    document.getElementById("bio").innerText = profile.bio;
+    document.getElementById("status").innerText = profile.status;
+    document.getElementById("age").innerText = profile.age;
+    document.getElementById("location").innerText = profile.location;
+    document.getElementById("email").innerText = profile.email;
+    document.getElementById("thinkingText").innerText = profile.thinking;
+    document.getElementById("avatar").style.backgroundImage = `url(${profile.avatar})`;
+    document.getElementById("banner").style.backgroundImage = `url(${profile.banner})`;
+
+    const sGrid = document.getElementById("skillsGrid");
+    skills.forEach(s => {
+        sGrid.innerHTML += `<div class="skill-bar"><div class="skill-info"><span>${s.name}</span><span>${s.level}</span></div><div class="progress-track"><div class="progress-fill" style="width:${s.level}"></div></div></div>`;
+    });
+
+    const pGrid = document.getElementById("projectGrid");
+    projects.forEach(p => {
+        const tags = p.langs.map(l => `<span class="tag">${l}</span>`).join("");
+        pGrid.innerHTML += `
+            <div class="project-card">
+                <div class="project-img" style="background-image:url('${p.image}')"></div>
+                <div class="project-info">
+                    <div class="project-title" style="font-family:'Syncopate'; font-size:12px; margin-bottom:10px;">${p.title}</div>
+                    <div class="project-desc" style="font-size:12px; color:var(--gray); margin-bottom:15px;">${p.desc}</div>
+                    <div class="lang-tags">${tags}</div>
+                    <div class="btn-row">
+                        <a href="${p.visit || '#'}" target="_blank" class="btn ${!p.visit ? 'disabled' : ''}">VISIT</a>
+                        <a href="${p.project || '#'}" target="_blank" class="btn ${!p.project ? 'disabled' : ''}">SOURCE</a>
+                    </div>
+                </div>
+            </div>`;
+    });
+
+    function showPage(id, btn) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        btn.classList.add('active');
+        window.scrollTo(0, 0);
+    }
+
+    async function send() {
+        const input = document.getElementById("msg");
+        const chatLogs = document.getElementById("chatLogs");
+        const typing = document.getElementById("typingIndicator");
+        const message = input.value;
+        if(!message) return;
+
+        chatLogs.innerHTML += `<div style="text-align:right; color:var(--neon); font-size: 11px; font-family:'JetBrains Mono'; margin-top:10px;">> ${message}</div>`;
+        input.value = "";
+        typing.style.display = "block";
+        chatLogs.scrollTop = chatLogs.scrollHeight;
+
+        try {
+            const r = await fetch("/chat", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ message: message })
+            });
+
+            const data = await r.json();
+
+            typing.style.display = "none";
+            chatLogs.innerHTML += `<div class="response-box">${data.response}</div>`;
+            
+        } catch (error) {
+
+            typing.style.display = "none";
+            chatLogs.innerHTML += `<div class="response-box" style="border-color: #ff0055; color: #ff0055;">ERROR: NETWORK_OR_SERVER_UNREACHABLE</div>`;
+        }
+        chatLogs.scrollTop = chatLogs.scrollHeight;
+    }
+    
+    document.getElementById("msg").addEventListener("keypress", (e) => { if (e.key === "Enter") send(); });
+</script>
+</body>
+</html>
