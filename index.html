@@ -130,6 +130,57 @@
 
         .skills-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; }
         .skill-bar { background: #111; border: 1px solid var(--border); padding: 12px; }
+
+/* Estilo atualizado da barra para suportar o hover */
+        .skill-bar { 
+            background: #111; 
+            border: 1px solid var(--border); 
+            padding: 12px; 
+            transition: transform 0.3s ease, border-color 0.3s ease;
+        }
+/* Efeito de Hover no card da skill - Agora brilha na cor da skill */
+        .skill-bar:hover {
+            transform: translateY(-2px);
+            background: #161616;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .progress-track { height: 4px; background: #222; overflow: hidden; position: relative; }
+
+        .progress-fill { 
+            height: 100%; 
+            /* Usa a variável --skill-color (definida no JS) ou branco por padrão */
+            background: var(--skill-color, #FFFFFF); 
+            /* O brilho também segue a cor da skill */
+            box-shadow: 0 0 12px var(--skill-color, #FFFFFF); 
+            width: 0%; 
+            /* Animação: 3.5 segundos, suave, infinita */
+            animation: fillProgress 3.5s ease-out infinite; 
+            opacity: 1;
+        }
+
+        /* Animação Atualizada: Cresce rápido, mantém muito tempo, some devagar */
+        @keyframes fillProgress {
+            0% { 
+                width: 0%; 
+                opacity: 1; 
+            }
+            /* Chega no valor máximo em 60% do tempo (rápido) */
+            60% { 
+                width: var(--target-width); 
+                opacity: 1; 
+            } 
+            /* Mantém o valor máximo e a opacidade até 90% (segura o visual) */
+            90% { 
+                width: var(--target-width); 
+                opacity: 1; 
+            } 
+            /* Reseta para 0% e opacidade 0 (some devagar nos últimos 10%) */
+            100% { 
+                width: 0%; 
+                opacity: 0; 
+            } 
+        }
         .skill-info { display: flex; justify-content: space-between; font-family: 'JetBrains Mono'; font-size: 11px; margin-bottom: 8px; }
         .progress-track { height: 4px; background: #222; }
         .progress-fill { height: 100%; background: var(--text); box-shadow: 0 0 10px var(--neon); }
@@ -264,16 +315,26 @@
     const skills = [
         { name: "NODE.JS // D.JS", level: "95%" },
         { name: "PYTHON // AUTOMATION", level: "80%" },
-        { name: "PHP // DEVELOPMENT", level: "50%" },
+        { name: "PHP // DEVELOPMENT", level: "76%" },
+        { name: "C# // REST", level: "70%" },
+        { name: "LUA // GAME MAKE", level: "97%" },
         { name: "FRONTEND // BRUTALISM", level: "85%" }
     ];
 
     const projects = [
         {
+            title: "RZC // PORTFOLIO",
+            desc: "Esse projeto de portfolio 100% personalizável",
+            image: "https://photo.hakari.fun/uploads/WEBSITE/63a4c2d6-33bbefee-12032026-image.png",
+            langs: ["Node.js", "JavaScript", "Brutal-CSS", "Html5"],
+            visit: "https://portfolio.hkr.lat/",
+            project: "https://github.com/eorazec/Portfolio"
+        },
+        {
             title: "RZCDOLL // CORE",
             desc: "Sistema de gerenciamento de permissões e painel web automatizado.",
             image: "https://photo.hakari.fun/uploads/WEBSITE/6cbb40e6-69e05b5e-12032026-image.png",
-            langs: ["Node.js", "JavaScript", "Brutal-CSS"],
+            langs: ["Node.js", "JavaScript", "Brutal-CSS", "Html5"],
             visit: "https://rzcdoll.venixcloud.com/",
             project: "https://github.com/eorazec/RzcDoll"
         },
@@ -281,7 +342,7 @@
             title: "HAKARI // TV",
             desc: "Protocolo de streaming de alta fidelidade focado em animes.",
             image: "https://photo.hakari.fun/uploads/WEBSITE/1c1b6a71-8097e726-12032026-image.png",
-            langs: ["Python", "JS", "HTML5"],
+            langs: ["Python", "JS", "HTML5", "Node.Js", "Brutal-CSS"],
             visit: "https://tv.hakari.fun",
             project: null
         }
@@ -304,9 +365,28 @@
     document.getElementById("avatar").style.backgroundImage = `url(${profile.avatar})`;
     document.getElementById("banner").style.backgroundImage = `url(${profile.banner})`;
 
-    const sGrid = document.getElementById("skillsGrid");
-    skills.forEach(s => {
-        sGrid.innerHTML += `<div class="skill-bar"><div class="skill-info"><span>${s.name}</span><span>${s.level}</span></div><div class="progress-track"><div class="progress-fill" style="width:${s.level}"></div></div></div>`;
+const sGrid = document.getElementById("skillsGrid");
+function getSkillColor(index, total) {
+        // Matiz (Hue) varia de 0 a 360. Distribuímos uniformemente.
+        // Saturacao: 100% (neon), Luminosidade: 60% (brilhante)
+        const hue = (index * (360 / total)) % 360;
+        return `hsl(${hue}, 100%, 60%)`;
+    }
+skills.forEach((s, index) => {
+        // Gera uma cor única para esta skill
+        const skillColor = getSkillColor(index, skills.length);
+
+        // Injetamos o nível (--target-width) E a cor (--skill-color)
+        sGrid.innerHTML += `
+            <div class="skill-bar" style="--skill-color: ${skillColor}">
+                <div class="skill-info">
+                    <span>${s.name}</span>
+                    <span style="color: ${skillColor}; font-weight: 800;">${s.level}</span>
+                </div>
+                <div class="progress-track">
+                    <div class="progress-fill" style="--target-width: ${s.level}"></div>
+                </div>
+            </div>`;
     });
 
     const pGrid = document.getElementById("projectGrid");
